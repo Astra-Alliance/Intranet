@@ -29,7 +29,7 @@ $(function() {
 			
 			callEndpointAPI("links", null, function(value) {
 				_links = value;
-				if (_location != "home" && _location != "help") showLinks(_location, $("#" + _location + " .links"), _links);
+				if (_location != "public" && _location != "help") showLinks(_location, $("#" + _location + " .links"), _links);
 			}, $("output"));
 
 			return !populateHtml("content/" + _location + ".md", $("#" + _location), ".content").toggleClass("hidden", false).trigger("isVisible");
@@ -64,7 +64,7 @@ $(function() {
 			$(".view").toggleClass("hidden", true);
 			var _location = $(e.target).data("view");
 			if (!_location) _location = "home";
-			if (_location != "home" && _location != "help") showLinks(_location, $("#" + _location + " .links"), _links);
+			if (_location != "public" && _location != "help") showLinks(_location, $("#" + _location + " .links"), _links);
 			return !populateHtml("content/" + _location + ".md", $("#" + _location), ".content").toggleClass("hidden", false).trigger("isVisible");
 	});
 	// -- Handle Menu Clicks --

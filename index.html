@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+		<title>Astra Intranet</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<!-- Google CDN Hosted JQuery -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+		
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+		<!-- Cloudflare CDN Hosted D3 -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+		
+		<!-- Imported Scripts -->
+		<script src="js/showdown.min.js"></script>
+		<script src="js/holder.min.js"></script>
+		
+		<!-- Main Running Script -->
+		<script src="js/main.js"></script>
+
+		<!-- Application Page Script -->	
+		<script src="js/index.js"></script>
+		
+		<!-- Import Hovers -->
+		<link rel="stylesheet" href="css/hover-min.css" type="text/css">
+		
+		<!-- Import Font -->
+		<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans" type="text/css">
+		
+		<!-- Import Styles -->
+		<link rel="stylesheet" href="css/main.css" type="text/css">
+		
+	</head>
+	<body>
+
+		<nav class="navbar navbar-default navbar-fixed-top navbar-light bg-faded">
+
+			<div class="container-fluid">
+				
+				<div class="navbar-header">
+
+					<!-- Button for Responsive Navigation Collapse -->
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+
+					<!-- App Name -->
+					<a class="navbar-brand" href="#home" data-view="home">Astra Intranet</a>
+
+				</div>
+
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+					<!-- Navigation Links -->
+					<ul class="nav navbar-nav">
+						<li id="navAdmin" class="nav-item">
+							<a class="nav-link roll" href="#admin" data-view="admin"><span data-title="Admin">Admin</span></a>
+						</li>
+						<li id="navAssessment" class="nav-item">
+							<a class="nav-link roll" href="#assessment" data-view="assessment"><span data-title="Assessment">Assessment</span></a>
+						</li>
+						<li id="navDiary" class="nav-item">
+							<a class="nav-link roll" href="#diary" data-view="diary"><span data-title="Diary">Diary</span></a>
+						</li>
+						<li d="navMarketing" class="nav-item">
+							<a class="nav-link roll" href="#marketing" data-view="marketing"><span data-title="Marketing">Marketing</span></a>
+						</li>
+						<li d="navHelp" class="nav-item">
+							<a class="nav-link roll" href="#help" data-view="help"><span data-title="Help">Help</span></a>
+						</li>
+					</ul>
+					
+					<!-- Authorisation Links -->
+					<div class="navbar-right">
+						<p id="user" class="navbar-text hidden">Signed in as <a title="To remove this app from your account, click here and follow the instructions" target="_blank" href="https://security.google.com/settings/security/permissions" class="navbar-link username"></a></p>
+
+						<form id="authorise" class="navbar-form hidden" role="form">
+							<div class="form-group">
+								<input id="login_email" type="email" placeholder="Optional Email" class="form-control input-sm optional" />								
+							</div>
+							<button id="login_submit" class="btn btn-default">Sign In</button>
+						</form>
+
+					</div>
+
+				</div>
+	
+			</div>
+
+		</nav>
+
+		<div class="container-fluid">
+
+			<!-- No-Auth / Public -->
+			<div id="public" class="hidden view row">
+				<div class="content col-md-offset-2 col-md-10 col-xs-12"></div>
+			</div>
+			<!-- No-Auth / Public -->
+
+			<!-- Home -->
+			<div id="home" class="hidden view row">
+				<div class="content col-md-offset-2 col-md-10"></div>
+			</div>
+			<!-- Home -->
+
+			<!-- Admin -->
+			<div id="admin" class="hidden view row">
+				<div class="content col-md-offset-2 col-md-10"></div>
+				<div class="links col-md-12"></div>
+			</div>
+			<!-- Home -->
+
+			<!-- Assessment -->
+			<div id="assessment" class="hidden view row">
+				<div class="content col-md-offset-2 col-md-10"></div>
+				<div class="links col-md-12"></div>
+			</div>
+			<!-- Assessment -->
+
+			<!-- Diary -->
+			<div id="diary" class="hidden view row">
+				<div class="content col-md-offset-2 col-md-10"></div>
+				<div class="links col-md-12"></div>
+			</div>
+			<!-- Diary -->
+
+			<!-- Marketing -->
+			<div id="marketing" class="hidden view row">
+				<div class="content col-md-offset-2 col-md-10"></div>
+				<div class="links col-md-12"></div>
+			</div>
+			<!-- Marketing -->
+
+			<!-- Help -->
+			<div id="help" class="hidden view row">
+				<ul class="content col-md-offset-2 col-md-10 list-unstyled"></ul>
+			</div>
+			<!-- Help -->
+			
+			<!-- Output Messages -->
+			<div id="output" class="hidden row">
+				<div class="content col-md-12"></div>
+			</div>
+
+		</div>
+
+	</body>
+	
+	<script src="https://apis.google.com/js/client.js?onload=checkAuth"></script>
+	
+</html>

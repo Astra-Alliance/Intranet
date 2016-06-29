@@ -1,5 +1,5 @@
 // -- Constant Variable -- //
-var _version = {Name : "Astra_Intranet", Version : "0.1.0"};
+var _version = {Name : "Astra_Intranet", Version : "0.1.1"};
 
 // -- Global Variables -- //
 var _user;
@@ -18,6 +18,8 @@ $(function() {
 	registerAuthHandlers(
 		function() {
 			$("#authorise").toggleClass("hidden", true);
+			$("#public").toggleClass("hidden", true);
+			
 			var _location = "home";
 			if(window.location.hash) _location = window.location.hash.substring(1);
 			
@@ -57,12 +59,12 @@ $(function() {
 	// -- Handle Menu Clicks --
 	$("a.nav-link, a.navbar-brand")
 		.click(function(e) {
-			e.preventDefault();	
-			window.location.hash = e.target.hash;
+			e.preventDefault();
+			window.location.hash = e.currentTarget.hash;
 			$(".btn-navbar").addClass("collapsed");
 			$(".navbar-collapse").removeClass("in").addClass("collapse").css("height", "0");
 			$(".view").toggleClass("hidden", true);
-			var _location = $(e.target).data("view");
+			var _location = $(e.currentTarget).data("view");
 			if (!_location) _location = "home";
 			if (_location != "public" && _location != "help") showLinks(_location, $("#" + _location + " .links"), _links);
 			return !populateHtml("content/" + _location + ".md", $("#" + _location), ".content").toggleClass("hidden", false).trigger("isVisible");

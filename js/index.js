@@ -102,6 +102,7 @@ $(function() {
 			
 			var _row;
 			var _count = 0;
+			var _flip = false;
 			
 			for (var i = 0; i < _links[_for].length; i++) {
 				
@@ -109,8 +110,12 @@ $(function() {
 				
 				var _link = _links[_for][i];
 				var _linkDiv = $("<div />").addClass("col-lg-4");
-				
-				var _linkImg = $("<img />").addClass("img-circle").attr("alt", _link.name).attr("width", 140).attr("height", 140).appendTo(_linkDiv);
+				if (!_flip) {
+					//if (i % 1) _linkDiv.css("background-color", "#f0f0f0");
+				} else {
+					//if (i % 2) _linkDiv.css("background-color", "#f0f0f0");
+				}
+				var _linkImg = $("<img />").addClass("img-circle").attr("alt", _link.name).attr("width", 140).attr("height", 140).appendTo($("<a />").attr("href", _link.url).attr("target", "_blank").appendTo(_linkDiv));
 				if (_link.image) {
 					_linkImg.attr("src", _link.image);
 				} else {
@@ -122,7 +127,7 @@ $(function() {
 				if (_link.description) $("<p />").text(_link.description).appendTo(_linkDiv);
 				if (_link.details) $("<p />").text(_link.details).appendTo(_linkDiv);
 				
-				$("<p />").append($("<a />").addClass("btn btn-default").attr("href", _link.url).attr("target", "_blank").attr("role", "button").text("Go -->")).appendTo(_linkDiv);
+				//$("<p />").append($("<a />").addClass("btn btn-default").attr("href", _link.url).attr("target", "_blank").attr("role", "button").text("Go -->")).appendTo(_linkDiv);
 				
 				_row.append(_linkDiv);
 				
@@ -130,6 +135,7 @@ $(function() {
 				if (_count == 3) {
 					_where.append(_row);
 					_count = 0;
+					_flip = !_flip;
 					_row = null;
 				}
 			}

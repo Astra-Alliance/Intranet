@@ -1,0 +1,1 @@
+FOR __TRAINEES ONLY__. You can begin a new __W__eekly __E__valuation on the __E__ffectiveness of __P__rogress form, or edit a recent one using the _Week / Assessment Point_ selector below. Mentors & ITTCos will receive completed WEEPs via an email link.

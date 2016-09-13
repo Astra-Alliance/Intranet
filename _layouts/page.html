@@ -1,0 +1,13 @@
+---
+layout: compress
+---
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-gb">
+{% include head.html %}
+	<body>
+		{% include navigation.html %}
+		{{ content }}
+		{% if site.analytics.enable %}{% include analytics.html %}{% endif %}
+  </body>
+	<script src="https://apis.google.com/js/client.js?onload=checkAuth"></script>
+</html>

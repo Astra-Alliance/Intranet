@@ -1,0 +1,166 @@
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		<meta name="description" content="{{ site.description }}">	
+		
+		<!-- Enable responsiveness on mobile devices-->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+
+		<title>{{ site.title }}</title>
+
+		<!-- CSS -->
+		<style type="text/css">{% capture include_to_scssify %}{% include style.scss %}{% endcapture %}{{ include_to_scssify | scssify }}</style>
+		
+		<!-- Async CSS -->
+		<link rel="preload" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" as="style" onload="this.rel='stylesheet'">
+		<link rel="preload" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" as="style" onload="this.rel='stylesheet'">
+		<link rel="preload" href="https://fonts.googleapis.com/css?family={{ site.fonts }}" as="style" onload="this.rel='stylesheet'">
+		
+		<!-- Fallback CSS -->
+		<noscript>
+			<!-- Bootstrap CSS -->
+			<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+			<!-- Bootstrap CSS Theme -->
+			<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+			<!-- Google Fonts -->
+			<link rel="stylesheet" href="https://fonts.googleapis.com/css?family={{ site.fonts }}">
+		</noscript>
+		<!-- Script from: https://github.com/filamentgroup/loadCSS Licence = The MIT License (MIT) | Copyright (c) 2014 Filament Group -->
+		<script>
+			(function(w){
+				"use strict";
+				var loadCSS = function( href, before, media ){
+					var doc = w.document;
+					var ss = doc.createElement( "link" );
+					var ref;
+					if( before ){
+						ref = before;
+					}
+					else {
+						var refs = ( doc.body || doc.getElementsByTagName( "head" )[ 0 ] ).childNodes;
+						ref = refs[ refs.length - 1];
+					}
+
+					var sheets = doc.styleSheets;
+					ss.rel = "stylesheet";
+					ss.href = href;
+					ss.media = "only x";
+
+					function ready( cb ){
+						if( doc.body ){
+							return cb();
+						}
+						setTimeout(function(){
+							ready( cb );
+						});
+					}
+
+					ready( function(){
+						ref.parentNode.insertBefore( ss, ( before ? ref : ref.nextSibling ) );
+					});
+
+					var onloadcssdefined = function( cb ){
+						var resolvedHref = ss.href;
+						var i = sheets.length;
+						while( i-- ){
+							if( sheets[ i ].href === resolvedHref ){
+								return cb();
+							}
+						}
+						setTimeout(function() {
+							onloadcssdefined( cb );
+						});
+					};
+
+					function loadCB(){
+						if( ss.addEventListener ){
+							ss.removeEventListener( "load", loadCB );
+						}
+						ss.media = media || "all";
+					}
+
+					if( ss.addEventListener ){
+						ss.addEventListener( "load", loadCB);
+					}
+					ss.onloadcssdefined = onloadcssdefined;
+					onloadcssdefined( loadCB );
+					return ss;
+				};
+				if( typeof exports !== "undefined" ){
+					exports.loadCSS = loadCSS;
+				}
+				else {
+					w.loadCSS = loadCSS;
+				}
+			}( typeof global !== "undefined" ? global : this ));
+
+			(function( w ){
+
+				if( !w.loadCSS ){
+					return;
+				}
+				var rp = loadCSS.relpreload = {};
+				rp.support = function(){
+					try {
+						return w.document.createElement("link").relList.supports( "preload" );
+					} catch (e) {}
+				};
+
+				rp.poly = function(){
+					var links = w.document.getElementsByTagName( "link" );
+					for( var i = 0; i < links.length; i++ ){
+						var link = links[ i ];
+						if( link.rel === "preload" && (link.getAttribute( "as" ) === "style" | link.getAttribute( "as" ) === "stylesheet" )){
+							w.loadCSS( link.href, link );
+							link.rel = null;
+						}
+					}
+				};
+
+				if( !rp.support() ){
+					rp.poly();
+					var run = w.setInterval( rp.poly, 300 );
+					if( w.addEventListener ){
+						w.addEventListener( "load", function(){
+							w.clearInterval( run );
+						} )
+					}
+				}
+			}( this ));
+		</script>
+		
+		<!-- Icons -->
+		<link rel="shortcut icon" href="{{ site.baseurl }}favicon.ico">
+		
+		<!--    ==== Scripts ====    -->
+		
+		<!-- Google CDN Hosted JQuery -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+		
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+		<!-- Cloudflare CDN Hosted D3 -->
+		<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script> -->
+		
+		<!-- Imported Scripts -->
+		<script src="https://apis.google.com/js/api.js"></script>
+		<script src="{{ site.baseurl }}js/showdown.min.js"></script>
+		<script src="{{ site.baseurl }}js/holder.min.js"></script>
+		<script src="{{ site.baseurl }}js/localforage.min.js"></script>
+		<script src="{{ site.baseurl }}js/moment.min.js"></script>
+		<script src="{{ site.baseurl }}js/autosize.min.js"></script>
+		<script src="{{ site.baseurl }}js/spin.min.js"></script>
+		<script src="{{ site.baseurl }}js/color.js"></script>
+		<script src="{{ site.baseurl }}js/standards.js"></script>
+		
+		<!-- Main Running Script -->
+		<script src="{{ site.baseurl }}js/main.js"></script>
+		<script src="{{ site.baseurl }}js/nav-auth.js"></script>
+		
+		<!-- Application Page Script -->
+		{% if page.scripts %}{% assign _scripts = page.scripts | split: ';' %}{% for _script in _scripts %}
+			<script src="{{ site.baseurl }}js/{{ _script }}"></script>
+		{% endfor %}{% endif %}
+		
+	</head>

@@ -204,7 +204,7 @@ $(function() {
 		if (_this.val()) {
 			
 			var _spin = new Spinner(spin_large).spin()
-			document.getElementById("form_Weep").append(_spin.el);
+			document.getElementById("form_Weep").appendChild(_spin.el);
 			
 			var _selected = _this.val();
 			_this.attr("disabled", "disabled");

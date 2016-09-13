@@ -362,7 +362,7 @@ $(function() {
 			$(".material-button").prop("disabled", true).addClass("high-dim");
 		
 			var _spin = new Spinner(spin_small).spin()
-			this.append(_spin.el);
+			this.appendChild(_spin.el);
 		
 			var _this = $("#form_Weep");
 			var _data = getDataFromForm(_this, "form_Weep");
@@ -398,7 +398,7 @@ $(function() {
 			$(".material-button").prop("disabled", true).addClass("high-dim");
 
 			var _spin = new Spinner(spin_small).spin()
-			this.append(_spin.el);
+			this.appendChild(_spin.el);
 
 			var _this = $("#form_Weep");
 			var _data = getDataFromForm(_this, "form_Weep");

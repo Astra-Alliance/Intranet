@@ -262,8 +262,10 @@ $(function() {
 								
 								if (_val.Value || _val.Value === "") _val = _val.Value;
 								
-								var _inputs = $("input[data-target='" + this.id + "'][data-value='" + _val + "']");
-								if (_inputs.length > 0) _inputs.parent().addClass("active");
+								if ($("input[data-target='" + this.id + "']").length > 0) {
+									var _inputs = $("input[data-target='" + this.id + "'][data-value='" + _val + "']");
+									if (_inputs.length > 0) _inputs.parent().addClass("active");
+								}
 								
 								if (this.type == "checkbox" || this.type == "radio") {
 									_this.prop("checked", _val);

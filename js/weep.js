@@ -42,6 +42,8 @@ $(function() {
 			} });				 
 			autosize($("textarea.resizable"));
 			
+			
+			
 			callEndpointAPI("weeps", null, function(value) {
 				if (value.result) {
 					
@@ -74,10 +76,49 @@ $(function() {
 						_period_Selector.append(_option);
 					}
 					
+					// -- Check for recovered save -- //
+					if (localforage) {
+						localforage.getItem("WEEP_FORM").then(function(value) {
+							if (value) {
+
+								 var _created = moment(value.when);
+								 $("#recover_date").text(_created.format("Do MMM YYYY HH:mm"));
+								 if (value.data.weep_Period) $("#recover_details").html("The recovered data is for the week commencing: <strong>" + value.data.weep_Period.Value + "</strong>. ");
+
+								 $("#recover_draft").click(function(e) {
+
+									 e.preventDefault();
+									 if (value.data.weep_Period) {
+										 $("#weep_PeriodSelector").val(value.data.weep_Period.Value).attr("disabled", "disabled");
+										 $("#weep_Period").val(value.data.weep_Period.Value);
+									 }
+									 populateForm(value.data);
+									 $("#retrieve_Local").hide();
+
+								 });
+
+								 $("#abandon_draft").click(function(e) {
+									 e.preventDefault();
+									 localforage.removeItem("WEEP_FORM").then(function() {$("#retrieve_Local").hide();}).catch(function(err) {});
+								 });
+
+								 $("#retrieve_Local").slideToggle();
+
+							} else {
+								$("#retrieve_Local").hide();
+
+							}
+						}).catch(function(err) {});
+					}
+					
 					// -- Distribution List -- //
 					$("#distribution_list").html("When submitted, this information will be also sent to: <strong>" + value.distribution + "</strong>. If this list is not correct, please <strong>inform us</strong> before finally submitting!");
 					
 				}
+			},
+      function(reason) {
+				// Failed
+				
 			}, $("output"));
 			
 		}}
@@ -91,6 +132,9 @@ $(function() {
 					if (this.Colour) _option.css("background-color", this.Colour);
 					list.append(_option);
 				});
+			},
+      function(reason) {
+				// Failed
 			}, output)
 	}
 	
@@ -211,89 +255,91 @@ $(function() {
 			$("#weep_Period").val(_selected);
 			callEndpointAPI("load_weep", [_selected], function(value) {
 				
-				if (value.result) {
-					
-					value = value.result;
-					
-					// -- Targets - bit of a hack but field magically disappears :( -- //
-					if (value.targets && value.targets.Target && value.targets.Target.length > 0) {
-						if (URL_VARS && URL_VARS.debug) console.log("TARGETS: " + JSON.stringify(value.targets.Target));
-						var __this = $("#add_Target")
-						for (var i = 0; i < value.targets.Target.length; i++) {
-							addTarget(value.targets.Target[i].Value, __this);
-						}	
-					}
-					
-					// -- Iterate through all the Input, Select & Text Area Elements of the Form -- //
-					$("#form_Weep").find("input, select, textarea").each(function() {
-						
-						_this = $(this);
-						
-						var _field = _this.data("field");
-						var _for = _this.data("for");
-						var _type = _this.data("type");
-						var _val;
-						
-						if (_field || (_for && _type)) {
+				if (value.result) populateForm(value.result);
 
-							if (URL_VARS && URL_VARS.debug) console.log("Form Input: Id=" + this.id + "; Type=" + this.type + "; Data-Field=" + _field + "; Data-For=" + _for + "; Data-Type=" + _type);
-							
-							if (_field && value[this.id]) {
-								
-								_val = value[this.id].Value;
-								if (URL_VARS && URL_VARS.debug) console.log("Found ID Match. Value=" + _val + ";Object Type=" + typeof _val);
-
-							} else if (_for && value[_for]) {
-
-								_val = value[_for][_type];
-								if (URL_VARS && URL_VARS.debug) console.log("Found FOR/TYPE Match. Value=" + JSON.stringify(_val) + ";Object Type=" + typeof _val);
-								if (value[_for].Evidence && value[_for].Evidence.length > 0) { // Add Evidence if applicable
-									for (var i = 0;i < value[_for].Evidence.length; i++) {
-										var _e = value[_for].Evidence[i];
-										addEvidence(_this.parent().parent(), _e.Id, _e.Value, _e.Url, _e.Icon, _for);
-									}	
-								}
-							
-							}
-							
-							if (_val) {
-								
-								if(Object.prototype.toString.call(_val) === "[object Array]" &&  _val.length == 1) _val = _val[0];
-								
-								if (_val.Value || _val.Value === "") _val = _val.Value;
-								
-								if ($("input[data-target='" + this.id + "']").length > 0) {
-									var _inputs = $("input[data-target='" + this.id + "'][data-value='" + _val + "']");
-									if (_inputs.length > 0) _inputs.parent().addClass("active");
-								}
-								
-								if (this.type == "checkbox" || this.type == "radio") {
-									_this.prop("checked", _val);
-									if (_this.data("reveal")) $("#" + _this.data("reveal")).slideToggle(); //slideToggle
-								} else {
-									_this.val(_val);
-									if (_this.hasClass("resizable")) { // Trigger the resize update!
-										var evt = document.createEvent("Event");
-										evt.initEvent("autosize:update", true, false);
-										this.dispatchEvent(evt);
-									}
-									
-								}
-								
-							}
-						
-						}
-						
-					});
-					
-				}
-
+				if (_spin) _spin.stop();
+				
+			}, function(reason) {
+				// Failed
 				if (_spin) _spin.stop();
 				
 			}, output)
 		}
 
 	});
+	
+	function populateForm(value) {
+		
+		// -- Targets - bit of a hack but field magically disappears :( -- //
+		if (value.targets && value.targets.Target && value.targets.Target.length > 0) {
+			if (URL_VARS && URL_VARS.debug) console.log("TARGETS: " + JSON.stringify(value.targets.Target));
+			var __this = $("#add_Target")
+			for (var i = 0; i < value.targets.Target.length; i++) {
+				addTarget(value.targets.Target[i].Value, __this);
+			}	
+		}
+					
+		// -- Iterate through all the Input, Select & Text Area Elements of the Form -- //
+		$("#form_Weep").find("input, select, textarea").each(function() {
+						
+			_this = $(this);
+						
+			var _field = _this.data("field");
+			var _for = _this.data("for");
+			var _type = _this.data("type");
+			var _val;
+						
+			if (_field || (_for && _type)) {
+
+				if (URL_VARS && URL_VARS.debug) console.log("Form Input: Id=" + this.id + "; Type=" + this.type + "; Data-Field=" + _field + "; Data-For=" + _for + "; Data-Type=" + _type);
+							
+				if (_field && value[this.id]) {
+								
+					_val = value[this.id].Value;
+					if (URL_VARS && URL_VARS.debug) console.log("Found ID Match. Value=" + _val + ";Object Type=" + typeof _val);
+
+				} else if (_for && value[_for]) {
+
+					_val = value[_for][_type];
+					if (URL_VARS && URL_VARS.debug) console.log("Found FOR/TYPE Match. Value=" + JSON.stringify(_val) + ";Object Type=" + typeof _val);
+					if (value[_for].Evidence && value[_for].Evidence.length > 0) { // Add Evidence if applicable
+						for (var i = 0;i < value[_for].Evidence.length; i++) {
+							var _e = value[_for].Evidence[i];
+							addEvidence(_this.parent().parent(), _e.Id, _e.Value, _e.Url, _e.Icon, _for);
+						}	
+					}
+							
+				}
+							
+				if (_val) {
+								
+					if (Object.prototype.toString.call(_val) === "[object Array]" &&  _val.length == 1) _val = _val[0];
+								
+					if (_val.Value || _val.Value === "") _val = _val.Value;
+								
+					if ($("input[data-target='" + this.id + "']").length > 0) {
+						var _inputs = $("input[data-target='" + this.id + "'][data-value='" + _val + "']");
+						if (_inputs.length > 0) _inputs.parent().addClass("active");
+					}
+								
+					if (this.type == "checkbox" || this.type == "radio") {
+						_this.prop("checked", _val);
+						if (_this.data("reveal")) $("#" + _this.data("reveal")).slideToggle(); //slideToggle
+					} else {
+						_this.val(_val);
+						if (_this.hasClass("resizable")) { // Trigger the resize update!
+							var evt = document.createEvent("Event");
+							evt.initEvent("autosize:update", true, false);
+							this.dispatchEvent(evt);
+						}			
+					}
+								
+				}
+						
+			}
+						
+		});
+	}
 	
 	$("input.reveal").change(function() {$("#" + $(this).data("reveal")).toggleClass("hidden");});
 	
@@ -376,10 +422,20 @@ $(function() {
 
 				if (value.result === true) {
 					$("<span />").addClass("status glyphicon glyphicon-ok success-icon").insertAfter("#weep_Submit");
+					if (localforage) localforage.clear().then(function() {}).catch(function(err) {}); // Clear Local Client / Side Cache.
 				} else {
 					$("<span />", {title : JSON.stringify(value)}).addClass("status glyphicon glyphicon-remove failure-icon").insertAfter("#weep_Submit");
 				}
 
+			}, function(reason) {
+				
+				// Failed - so stop the spinner and put everything back to normal, then try to stash the data locally.
+				if (_spin) _spin.stop();
+				$(".material-button").prop("disabled", false).removeClass("high-dim");
+				$("<span />", {title : JSON.stringify(reason)}).addClass("status glyphicon glyphicon-remove failure-icon").insertAfter("#weep_Submit");
+				
+				if (localforage)  localforage.setItem("WEEP_FORM", {when : new Date().toISOString(), data : _data}).then(function(value) {}).catch(function(err) {}); // Local Save of last resort.
+				
 			}, output)
 
 		} else {
@@ -412,10 +468,20 @@ $(function() {
 
 				if (value.result === true) {
 					$("<span />").addClass("status glyphicon glyphicon-ok success-icon").insertAfter("#weep_Submit");
+					if (localforage) localforage.clear().then(function() {}).catch(function(err) {}); // Clear Local Client / Side Cache.
 				} else {
 					$("<span />", {title : JSON.stringify(value)}).addClass("status glyphicon glyphicon-remove failure-icon").insertAfter("#weep_Submit");
 				}
 
+			}, function(reason) {
+				
+				// Failed
+				if (_spin) _spin.stop();
+				$(".material-button").prop("disabled", false).removeClass("high-dim");
+				$("<span />", {title : JSON.stringify(reason)}).addClass("status glyphicon glyphicon-remove failure-icon").insertAfter("#weep_Submit");
+				
+				if (localforage)  localforage.setItem("WEEP_FORM", {when : new Date().toISOString(), data : _data}).then(function(value) {}).catch(function(err) {}); // Local Save of last resort.
+				
 			}, output)
 		
 			} else {

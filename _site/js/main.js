@@ -66,7 +66,7 @@ function _updateStatus(isAuthenticated) {
 
 
 // -- API Methods -- //
-function callEndpointAPI(method, parameters, callback, messagesOutput) {
+function callEndpointAPI(method, parameters, success_Callback, failure_callback, messagesOutput) {
 	var request = {
 		function : method,
 		parameters : parameters,
@@ -105,14 +105,14 @@ function callEndpointAPI(method, parameters, callback, messagesOutput) {
 		} else {
 			
 			if (URL_VARS && URL_VARS.debug) console.log(response.result.response);
-			if (callback) callback(response.result.response);
+			if (success_Callback) success_Callback(response.result.response);
 		}
 		
 	}, function(reason) {
 		
 		showMessages("Error calling API:", messagesOutput);
-		showMessages(JSON.stringify(resp, null, 2), messagesOutput);
-		
+		showMessages(JSON.stringify(reason, null, 2), messagesOutput);
+		if (failure_callback) failure_callback(reason);
 		
 	});
 	

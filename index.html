@@ -67,6 +67,29 @@ scripts: index.js;weep.js
 				<div class="content col-md-offset-2 col-md-10"></div>
 				<div class="col-md-offset-2 col-md-10">
 
+					<!-- Retrieve if error -->
+					<div id="retrieve_Local" style="display: none;" class="panel panel-info">
+  
+    				<div class="panel-heading">
+      				<h4 class="panel-title"><span class="glyphicon glyphicon-piggy-bank" style="padding-right: 0.6em;"></span>Recovered Form</h4>		
+    				</div>
+  	
+						<div class="panel-body">
+  
+							<p>Looks like there was a <strong>failed</strong> form save/submit from <strong><span id="recover_date"></span></strong>, which has been recovered. <span id="recover_details"></span>You can choose to recover this and try to save/submit again, or abandon it (the recovered data will be removed).</p>
+							
+							<!-- Control Buttons -->
+							<div class="form-group">
+								
+								<button id="recover_draft" class="btn material-button material-button-info">Recover</button>
+								<button id="abandon_draft" class="btn material-button material-button-warning">Abandon</button>
+    						<span class="help-block"></span>
+  						</div>
+			
+    				</div>
+  
+  				</div>
+					
 					<!-- Weep Form -->
 					<form id="form_Weep" class="form-horizontal pane" role="form">
 						<fieldset>

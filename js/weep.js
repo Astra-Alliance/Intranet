@@ -555,7 +555,7 @@ $(function() {
 		
 		if ($("#weep_Period").val()) {
 			
-			$(".material-button").prop("disabled", true).addClass("high-dim");
+			$("#weep_Save, #weep_Submit").prop("disabled", true).addClass("high-dim");
 		
 			var _spin = new Spinner(spin_small).spin()
 			this.appendChild(_spin.el);
@@ -566,7 +566,7 @@ $(function() {
 			callEndpointAPI("save_weep", [_data], function(value) {
 
 				if (_spin) _spin.stop();
-				$(".material-button").prop("disabled", false).removeClass("high-dim");
+				$("#weep_Save, #weep_Submit").prop("disabled", false).removeClass("high-dim");
 
 				if (value.result === true) {
 					$("<span />").addClass("status glyphicon glyphicon-ok success-icon").insertAfter("#weep_Submit");
@@ -579,7 +579,7 @@ $(function() {
 				
 				// Failed - so stop the spinner and put everything back to normal, then try to stash the data locally.
 				if (_spin) _spin.stop();
-				$(".material-button").prop("disabled", false).removeClass("high-dim");
+				$("#weep_Save, #weep_Submit").prop("disabled", false).removeClass("high-dim");
 				$("<span />", {title : JSON.stringify(reason)}).addClass("status glyphicon glyphicon-remove failure-icon").insertAfter("#weep_Submit");
 				
 				if (localforage)  localforage.setItem("WEEP_FORM", {when : new Date().toISOString(), data : _data}).then(function(value) {}).catch(function(err) {}); // Local Save of last resort.
@@ -601,7 +601,7 @@ $(function() {
 		
 		if ($("#weep_Period").val()) {
 
-			$(".material-button").prop("disabled", true).addClass("high-dim");
+			$("#weep_Save, #weep_Submit").prop("disabled", true).addClass("high-dim");
 
 			var _spin = new Spinner(spin_small).spin()
 			this.appendChild(_spin.el);
@@ -612,12 +612,13 @@ $(function() {
 			callEndpointAPI("submit_weep", [_data], function(value) {
 
 				if (_spin) _spin.stop();
-				$(".material-button").prop("disabled", false).removeClass("high-dim");
+				
 
 				if (value.result === true) {
 					$("<span />").addClass("status glyphicon glyphicon-ok success-icon").insertAfter("#weep_Submit");
 					if (localforage) localforage.clear().then(function() {}).catch(function(err) {}); // Clear Local Client / Side Cache.
 				} else {
+					$("#weep_Save, #weep_Submit").prop("disabled", false).removeClass("high-dim");
 					$("<span />", {title : JSON.stringify(value)}).addClass("status glyphicon glyphicon-remove failure-icon").insertAfter("#weep_Submit");
 				}
 
@@ -625,7 +626,7 @@ $(function() {
 								
 				// Failed
 				if (_spin) _spin.stop();
-				$(".material-button").prop("disabled", false).removeClass("high-dim");
+				$("#weep_Save, #weep_Submit").prop("disabled", false).removeClass("high-dim");
 				$("<span />", {title : JSON.stringify(reason)}).addClass("status glyphicon glyphicon-remove failure-icon").insertAfter("#weep_Submit");
 				
 				if (localforage)  localforage.setItem("WEEP_FORM", {when : new Date().toISOString(), data : _data}).then(function(value) {}).catch(function(err) {}); // Local Save of last resort.

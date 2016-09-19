@@ -3,10 +3,66 @@ var _version = {Name : "Weep_App", Version : "0.1.2"};
 
 // -- Global Variables -- //
 var colour = net.brehaut.Color;
+var picker_Loaded = false;
+
+// -- Generic 'Change' and 'Reveal' Functions -- //
+function inputChange(_this) {
+	if (_this.data("target") && (_this.data("value") || _this.data("value") === "")) {
+		if (_this.prop("checked")) {
+			autosize.update($("#" + _this.data("target")).val(_this.data("value")));
+		} else {
+			autosize.update($("#" + _this.data("target")).val(""));
+		}
+	}
+}
+
+function inputReveal(_this) {
+	$("#" + _this.data("reveal")).toggleClass("hidden");
+}
+
+function _nullClick(e) {
+	e.preventDefault();
+	return true;
+}
 
 // -- Initial Running Method -- //
 $(function() {
 
+	var addEvidenceSelector = function(_suffix, _for, _order, _hide, _includeDetails, _includeClicks) {
+		
+		var _selector = $("<div />").attr("id", "evidence_" + _suffix).addClass("evidence-holder")
+		if (_hide) _selector.css("display", "none");
+		
+		var _input = $("<div />").addClass("input-group evidence").data("for", _for).appendTo(_selector);
+		
+		if (_includeDetails === true) {
+				_input.append($("<textarea />").data("for", _for).data("type", "Details").data("order", _order).attr("name", "evidenceDetails_" + _suffix).attr("rows", 1).attr("placeholder", "Further details about how this was met").css("width", "100%").css("max-width", "100%").css("resize", "vertical").addClass("form-control optional resizable"));
+		}
+
+		var g_Drive = $("<a />").attr("href", "#").addClass("g-drive google").text("From Google Drive");
+		if (_includeClicks) {
+			g_Drive.click(_googleDriveClick);
+		} else {
+			g_Drive.attr("disabled", "disabled").addClass("dim").click(_nullClick);
+		}
+		
+		_input.append($("<div />").addClass("input-group-btn bottom-align").attr("id", "evidenceButton_" + _suffix)
+			.append($("<button />").attr("type", "button").addClass("btn btn-primary dropdown-toggle").attr("data-toggle", "dropdown").attr("aria-haspopup", "true")
+			  .attr("aria-expanded", "false").text("Evidence ").append($("<span />").addClass("caret")).dropdown())
+			.append($("<ul />").addClass("dropdown-menu dropdown-menu-right")
+				.append($("<li />").append(g_Drive))
+				.append($("<li />").append($("<a />").attr("href", "#").addClass("g-classroom google dim").attr("disabled", "disabled").text("From Google Classroom").click(_nullClick)))
+				.append($("<li />").append($("<a />").attr("href", "#").addClass("g-mail google dim").attr("disabled", "disabled").text("From Google Gmail").click(_nullClick)))
+				.append($("<li />").append($("<a />").attr("href", "#").addClass("g-file google dim").attr("disabled", "disabled").text("From File").click(_nullClick)))
+				.append($("<li />").append($("<a />").attr("href", "#").addClass("g-web google dim").attr("disabled", "disabled").text("From Web").click(_nullClick)))
+				.append($("<li />").attr("role", "separator").addClass("divider"))
+				.append($("<li />").append($("<a />").attr("href", "#").addClass("g-offline google dim").attr("disabled", "disabled").text("Offline / Paper").click(_nullClick)))
+		));
+		
+		return _selector;
+		
+	};
+	
 	var addTarget = function(details, _this) {
 		
 		var _target = $("#targets");
@@ -29,8 +85,93 @@ $(function() {
 				}
 			}
 		));
-	}
+	};
+
+	var addPreviousTargets = function(value) {
 		
+		var _previous = $("#previous_Targets");
+		var _order = 41;
+		
+		for (var i = 0; i < value.Target.length; i++) {
+			
+			var target_Value = value.Target[i].Value;
+			if (target_Value) {
+				var _id = "assessment_PreviousTarget" + (i + 1);
+				var _suffix = "previousTarget_" + (i + 1);
+				var _holder = $("<div />").addClass("form-group").appendTo(_previous.find(".panel-body"));
+				
+				// Add the label
+				var _description;
+				if (target_Value.indexOf("[") > 0 && target_Value.endsWith("]")) {
+					
+					_holder.append( $("<label />", {
+						class : "col-md-4 control-label",
+						for : _id,
+						text : target_Value.substring(0, target_Value.indexOf("[") - 1),
+					}));
+					
+					_description =  "Target intended to be " + target_Value.substr(target_Value.indexOf("[") + 1).replace("]", "");
+					
+					target_Value = target_Value.substring(0, target_Value.indexOf("[") - 1);
+					
+				} else {
+					
+					_holder.append( $("<label />", {
+						class : "col-md-4 control-label",
+						for : _id,
+						text : target_Value,
+					}));
+					
+				}
+			
+				// Add the Checkbox to confirm
+				var _checkbox = $("<span />", {class : "input-group-addon"}).append(
+					$("<input />", {id : _id, name : _id, type : "checkbox"})
+						.data("field", "Previous Target " + (i + 1))
+						.data("label", target_Value)
+						.data("target", _id + "_Declaration")
+						.data("value", "I confirm that I have met this target")
+						.data("order", _order)
+						.attr("aria-label", "Confirmation of Target " + (i + 1) + " Met")
+						.change(function() {inputChange($(this));})
+				)
+				_order += 1;
+				
+				// Add the confirmation text area
+				var _textarea = $("<textarea />", {
+					class : "form-control resizable",
+					id : _id + "_Declaration",
+					name : _id + "_Declaration",
+					readonly : "readonly",
+					rows : 1,
+				})
+				.data("for", _id)
+				.data("type", "Declaration")
+				.data("field", "Target " + (i + 1) + " Statement")
+				.data("order", _order)
+				.attr("aria-label", "Declaration of Target " + (i + 1) + " Met")
+				_order += 1;
+
+				var _evidence = addEvidenceSelector(_suffix, _id, _order, false, false, picker_Loaded);
+				_order += 1;
+				var _confirmation = _evidence.find(".evidence");
+				_confirmation.prepend(_textarea).prepend(_checkbox);
+				if (_description) {
+					_evidence.append($("<span />", {
+						class : "help-block",
+						text : _description,
+					}))
+				}
+				_holder.append(_evidence.addClass("col-md-8"));
+				
+			}
+
+		}
+		
+		_previous.slideToggle();
+		
+	};
+	
 	var populateForm = function(value) {
 		
 		// -- Targets - bit of a hack but field magically disappears :( -- //
@@ -50,7 +191,7 @@ $(function() {
 			var _field = _this.data("field");
 			var _for = _this.data("for");
 			var _type = _this.data("type");
-			var _val;
+			var _val, _label;
 						
 			if (_field || (_for && _type)) {
 
@@ -59,6 +200,7 @@ $(function() {
 				if (_field && value[this.id]) {
 								
 					_val = value[this.id].Value;
+					if (value[this.id].Label) _label = value[this.id].Label;
 					if (URL_VARS && URL_VARS.debug) console.log("Found ID Match. Value=" + _val + ";Object Type=" + typeof _val);
 
 				} else if (_for && value[_for]) {
@@ -78,7 +220,10 @@ $(function() {
 								
 					if (Object.prototype.toString.call(_val) === "[object Array]" &&  _val.length == 1) _val = _val[0];
 								
-					if (_val.Value || _val.Value === "") _val = _val.Value;
+					if (_val.Value || _val.Value === "") {
+						_val = _val.Value;
+						if (_val.Label) _label = _val.Label;
+					} 
 								
 					if ($("input[data-target='" + this.id + "']").length > 0) {
 						var _inputs = $("input[data-target='" + this.id + "'][data-value='" + _val + "']");
@@ -96,13 +241,14 @@ $(function() {
 							this.dispatchEvent(evt);
 						}			
 					}
+					if (_label) _this.data("label", _label);
 								
 				}
 						
 			}
 						
 		});
-	}
+	};
 	
 	$("#weep").bind("isVisible", function() {
 		
@@ -130,12 +276,8 @@ $(function() {
 			}
 			
 			gapi.load("picker", { callback: function() {
+				picker_Loaded = true;
 				$(".g-drive").removeAttr("disabled").removeClass("dim").click(_googleDriveClick);
-				$(".g-classroom").click(_nullClick);
-				$(".g-mail").click(_nullClick);
-				$(".g-file").click(_nullClick);
-				$(".g-web").click(_nullClick);
-				$(".g-offline").click(_nullClick);
 			} });				 
 			autosize($("textarea.resizable"));
 
@@ -242,16 +384,7 @@ $(function() {
    	_this.parent("li").addClass("active");
 	});
 	
-	$("input[type='radio'], input[type='checkbox']").change(function() {
-		var _this = $(this);
-		if (_this.data("target") && (_this.data("value") || _this.data("value") === "")) {
-			if (_this.prop("checked")) {
-				autosize.update($("#" + _this.data("target")).val(_this.data("value")));
-			} else {
-				autosize.update($("#" + _this.data("target")).val(""));
-			}
-		}
-	});
+	$("input[type='radio'], input[type='checkbox']").change(function() {inputChange($(this));});
 	
 	$("a.dropdown-selector").click(function(e) {
 		var _this = $(this);
@@ -322,12 +455,35 @@ $(function() {
 			document.getElementById("form_Weep").appendChild(_spin.el);
 			
 			var _selected = _this.val();
+			
+			
 			_this.attr("disabled", "disabled");
 			$("#weep_Period").val(_selected);
 			callEndpointAPI("load_weep", [_selected], function(value) {
 				
-				if (value.result) populateForm(value.result);
-
+				if (value.result) {
+					
+					if (value.result.previous_Targets) {
+						
+						// 	Populate Previous Targets
+						addPreviousTargets(value.result.previous_Targets);
+						delete value.result.previous_Targets;
+						
+					} else {
+						
+						// 	Make sure Previous targets are not shown!
+						$("#previous_Targets").slideUp();
+						
+					}
+					
+					if (value.result._exists === true) populateForm(value.result);
+					
+					if ( $("#weep_PeriodSelector").find(":selected").text().indexOf(" (Submitted)") > 0 ) {
+						$("#weep_Save, #weep_Submit").prop("disabled", true).addClass("high-dim");
+					}
+					
+				}
+				
 				if (_spin) _spin.stop();
 				
 			}, function(reason) {
@@ -339,12 +495,7 @@ $(function() {
 
 	});
 	
-	$("input.reveal").change(function() {$("#" + $(this).data("reveal")).toggleClass("hidden");});
-	
-	function _nullClick(e) {
-		e.preventDefault();
-		return true;
-	}
+	$("input.reveal").change(function() {inputReveal($(this));});
 	
 	function _googleDriveClick(e) {
 		e.preventDefault();
@@ -386,7 +537,6 @@ $(function() {
 					var _icon = _file[google.picker.Document.ICON_URL];
 					
 					if (URL_VARS && URL_VARS.debug) console.log(_file);
-					console.log(prefix);
 
 					if (target) addEvidence(target, _id, _name, _url, _icon, prefix);
 					
@@ -472,7 +622,7 @@ $(function() {
 				}
 
 			}, function(reason) {
-				
+								
 				// Failed
 				if (_spin) _spin.stop();
 				$(".material-button").prop("disabled", false).removeClass("high-dim");
@@ -509,31 +659,30 @@ $(function() {
 		if (_colour) _return.css("background-color", _colour);
 		// -- Handle Colour -- //
 		
+		// -- Create Standard Order -- //
+		var numerical_Standard = _standard.replaceAll(".", "");
+		if (numerical_Standard.length == 1) {
+			numerical_Standard = numerical_Standard + "00";
+		} else if (numerical_Standard.length == 2) {
+			numerical_Standard = numerical_Standard + "0";
+		}
+		
+		// -- Create Standard Order -- //
+		
 		_return.append($("<div />").addClass("material-switch-label").text(standard.details).prepend($("<h4 />").text(_standard + ") " + (standard.name ? standard.name + "  " : "")).addClass("number-label")));
 		_return.append($("<div />").addClass("pull-right")
 			.append($("<input />").attr("id", "standard_" + _safeStandard).attr("name", "standard_" + _safeStandard).attr("hidden", "hidden")
 				.attr("type", "checkbox").attr("for", (standard.evidence && standard.evidence === true) ? "evidence_" + _safeStandard : "childStandards_" + _safeStandard)
 							.data("reveal", (standard.evidence && standard.evidence === true) ? "evidence_" + _safeStandard : "childStandards_" + _safeStandard)
-				.data("field", "Standard " + _standard).data("order", Number("5" + _standard)).change(function() {$("#" + $(this).data("reveal")).slideToggle();}))
+				.data("field", "Standard " + _standard).data("label", standard.details).data("order", Number(numerical_Standard)).change(function() {$("#" + $(this).data("reveal")).slideToggle();}))
 		.append($("<label />").addClass("material-switch").attr("for", "standard_" + _safeStandard)));
 
 		if (standard.evidence && standard.evidence === true) {
-			var _holder = $("<div />").attr("id", "evidence_" + _safeStandard).addClass("evidence-holder").css("display", "none");
-			var _input = $("<div />").addClass("input-group evidence").data("for", "standard_" + _safeStandard).appendTo(_holder);
-			_input.append($("<textarea />").data("for", "standard_" + _safeStandard).data("type", "Details").data("order", Number("5" + _standard)).attr("name", "evidenceDetails_" + _safeStandard).attr("rows", 1).attr("placeholder", "Further details about how this was met").css("width", "100%").css("max-width", "100%").css("resize", "vertical").addClass("form-control optional resizable"));
-			_input.append($("<div />").addClass("input-group-btn bottom-align").attr("id", "evidenceButton_" + _safeStandard)
-				.append($("<button />").attr("type", "button").addClass("btn btn-primary dropdown-toggle").attr("data-toggle", "dropdown").attr("aria-haspopup", "true")
-								.attr("aria-expanded", "false").text("Evidence ").append($("<span />").addClass("caret")).dropdown())
-				.append($("<ul />").addClass("dropdown-menu dropdown-menu-right")
-								.append($("<li />").append($("<a />").attr("href", "#").addClass("g-drive google dim").attr("disabled", "disabled").text("From Google Drive")))
-								.append($("<li />").append($("<a />").attr("href", "#").addClass("g-classroom google dim").attr("disabled", "disabled").text("From Google Classroom")))
-								.append($("<li />").append($("<a />").attr("href", "#").addClass("g-mail google dim").attr("disabled", "disabled").text("From Google Gmail")))
-								.append($("<li />").append($("<a />").attr("href", "#").addClass("g-file google dim").attr("disabled", "disabled").text("From File")))
-								.append($("<li />").append($("<a />").attr("href", "#").addClass("g-web google dim").attr("disabled", "disabled").text("From Web")))
-								.append($("<li />").attr("role", "separator").addClass("divider"))
-								.append($("<li />").append($("<a />").attr("href", "#").addClass("g-offline google dim").attr("disabled", "disabled").text("Offline / Paper")))
-				));
-			_return.append(_holder);
+			
+			_return.append(
+				addEvidenceSelector(_safeStandard, "standard_" + _safeStandard, Number(numerical_Standard), true, true, picker_Loaded)
+			);
+			
 		}
 
 		if (standard.children && standard.children.length > 0) {
@@ -561,11 +710,13 @@ function getDataFromForm(form, id) {
 			_return[_this.data("for")][_this.data("type")].push({
 				Field : _this.data("field") ? _this.data("field") : _this.attr("name"),
 				Value : (this.type == "checkbox" || this.type == "radio") ? _this.prop("checked") : _this.val(),
+				Label : _this.data("label") ? _this.data("label") : "",
 			});
 		} else if (_this.attr("name")) {
 			_return[_this.attr("name")] = {
 				Field : _this.data("field"),
 				Value : (this.type == "checkbox" || this.type == "radio") ? _this.prop("checked") : _this.val(),
+				Label : _this.data("label") ? _this.data("label") : "",
 				Order : _this.data("order"),
 			};	
 		}
@@ -588,14 +739,6 @@ function getDataFromForm(form, id) {
 			_return[_this.data("for")][_type].push(_object);
 		}
 	});
-	
-	if (URL_VARS && URL_VARS.debug) {
-		console.log("Getting Data from Form: " + id);
-		console.log("Form:");
-		console.log(form);
-		console.log("Data:");
-		console.log(_return);
-	}
 	
 	return _return;
 }

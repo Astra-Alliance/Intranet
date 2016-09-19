@@ -12,7 +12,7 @@ var URL_VARS = getUrlVars();
 var API_KEY = "AIzaSyA40sckIZ1Zymd4DyhQ8sI94yG9SI9DQdk";
 var API_CLIENT_ID = "1036840413668-f6fu81ngpttr6s0vh101mvqgfaocj63r.apps.googleusercontent.com";
 var API_ENDPOINT_ID = "MYiqXk-0D1xkKg6yba32qXkq0wEnsVTCk";
-var API_SCOPES = "profile email https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/forms https://www.googleapis.com/auth/documents https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/script.storage https://www.googleapis.com/auth/groups";
+var API_SCOPES = "profile email https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/forms https://www.googleapis.com/auth/documents https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/script.storage https://www.googleapis.com/auth/groups https://www.googleapis.com/auth/script.external_request https://www.googleapis.com/auth/script.send_mail";
 // -- Set Up API Google Scopes & IDs -- //
 
 // -- Authorisation Methods -- //
@@ -83,12 +83,15 @@ function callEndpointAPI(method, parameters, success_Callback, failure_callback,
 		if (response.result.error) {
 						
 			if (response.result.error.status) {
+				
 				if (response.result.error.status == "UNAUTHENTICATED") {
-					gapi.auth2.getAuthInstance().signIn().then(callEndpointAPI(method, parameters, callback, messagesOutput));
+					gapi.auth2.getAuthInstance().signIn().then(callEndpointAPI(method, parameters, success_Callback, failure_callback, messagesOutput));
 				} else {
 					showMessages("Error calling API:", messagesOutput);
 					showMessages(JSON.stringify(resp, null, 2), messagesOutput);
+					if (failure_callback) failure_callback(JSON.stringify(resp, null, 2));
 				}
+				
 			} else {
 				var error = response.result.error.details[0];
 				showMessages('Script error message: ' + error.errorMessage, messagesOutput);
@@ -100,12 +103,14 @@ function callEndpointAPI(method, parameters, success_Callback, failure_callback,
 						showMessages('\t' + trace.function+':' + trace.lineNumber, messagesOutput);
 					}
 				}
+				if (failure_callback) failure_callback(error.errorMessage);
 			}
 			
 		} else {
 			
 			if (URL_VARS && URL_VARS.debug) console.log(response.result.response);
 			if (success_Callback) success_Callback(response.result.response);
+			
 		}
 		
 	}, function(reason) {
@@ -135,6 +140,10 @@ function showMessages(messages, output) {
 
 
 // -- General Methods -- //
+String.prototype.replaceAll = function(target, replacement) {
+  return this.split(target).join(replacement);
+};
+
 function getUrlVars()
 {
 	var vars = [], hash;

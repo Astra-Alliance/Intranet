@@ -83,6 +83,8 @@ $(function() {
 		callEndpointAPI("links", null, function(value) {
 			_links = value.result;
 			if (_location != "public" && _location != "help") showLinks(_location, $("#" + _location + " .links"), _links);
+		}, function(reason) {
+			// TODO: Do Something
 		}, $("output"));
 
 		return !populateHtml("content/" + _location + ".md", $("#" + _location), ".content").toggleClass("hidden", false).trigger("isVisible");
@@ -130,6 +132,8 @@ $(function() {
 				$.each(value, function() {
 					_list.append($("<li />").text(this.Name + " -- v" + this.Version).prepend($("<span />").addClass("glyphicon glyphicon-wrench").attr("aria-hidden", "true").css("margin-right", "1em")));
 				});
+			}, function(reason) {
+				
 			}, $("output"))	
 		}}
 	);

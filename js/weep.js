@@ -476,10 +476,10 @@ $(function() {
 						
 					}
 					
-					if (value.result._exists === true) {
-						if ($("#navWeep").is(":visible")) $("#navWeep").toggle();
-						populateForm(value.result);
-					}
+					
+					if (value.result._exists === true) populateForm(value.result);
+					
+					if ($("#navWeep").is(":visible")) $("#navWeep").toggle(); // Avoid display BUG (TO BE FIXED)
 					
 					if ( $("#weep_PeriodSelector").find(":selected").text().indexOf(" (Submitted)") > 0 ) {
 						$("#weep_Save, #weep_Submit").prop("disabled", true).addClass("high-dim");

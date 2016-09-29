@@ -520,6 +520,9 @@ $(function() {
 	
 	function addEvidence(target, id, name, url, icon, prefix) {
 		
+		var checks = $(target).find("input[type='checkbox']");
+		if (checks && checks.length == 1 && !checks.prop("checked")) inputChange(checks.prop("checked", true));
+		
 		var _listItem = $("<div />").addClass("evidence-list-item").appendTo(target);
 						_listItem.append($("<span />").addClass("label label-default").text("Evidence"));
 						if (icon) _listItem.append($("<img />").addClass("pad-left file-icon").attr("src", icon));
@@ -529,6 +532,7 @@ $(function() {
 	}
 	
 	function _pickerCallback(data, target, prefix) {
+		
 			if (data[google.picker.Response.ACTION] == google.picker.Action.PICKED) {
 				
 				for (var i = 0; i < data[google.picker.Response.DOCUMENTS].length; i++) {

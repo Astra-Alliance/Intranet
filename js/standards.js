@@ -372,11 +372,11 @@ var standards = [
 				evidence: true,
 			}, {
 				number: 2,
-				details: "Showing tolerance of and respect for the rights of others.",
+				details: "Having regard for the need to safeguard pupils' well-being, in accordance with statutory provisions.",
 				evidence: true,
 			}, {
 				number: 3,
-				details: "Deploy support staff effectively.",
+				details: "Showing tolerance of and respect for the rights of others.",
 				evidence: true,
 			}, {
 				number: 4,

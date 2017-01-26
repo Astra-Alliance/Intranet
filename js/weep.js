@@ -503,7 +503,7 @@ $(function() {
 	function _googleDriveClick(e) {
 		e.preventDefault();
 		var _picker = new google.picker.PickerBuilder()
-			.addView(google.picker.DocsView().setIncludeFolders(true))
+			.addView(new google.picker.DocsView().setIncludeFolders(true))
 			.setAppId(API_CLIENT_ID)
 			.setDeveloperKey(API_KEY)
 			.setOAuthToken(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token)
